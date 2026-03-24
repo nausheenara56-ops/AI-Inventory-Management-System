@@ -1,0 +1,271 @@
+import flet as ft
+from ui.theme import (
+    ACCENT_PRIMARY,
+    COLOR_DANGER,
+    COLOR_WARNING,
+    COLOR_SUCCESS,
+    TEXT_PRIMARY,
+    TEXT_SECONDARY,
+    SURFACE_DARK,
+    BORDER_DEFAULT,
+)
+from ui.components import (
+    build_card,
+    build_stat_card,
+    build_page_header,
+    build_data_table,
+    build_action_button,
+)
+from data.product_service import get_all_products
+from dialogs.add_product_dialog import open_add_product_dialog
+
+
+def build_products_page(
+    flet_page: ft.Page,
+    filtered_products=None,
+    search_value="",
+    selected_category="All Categories",
+):
+    
+    if filtered_products is None:
+        products = get_all_products()
+    else:
+        products = filtered_products
+
+    def determine_stock_color(p):
+        if p["stock"] == 0:
+            return COLOR_DANGER
+        if p["stock"] < p["reorder"]:
+            return COLOR_WARNING
+        return COLOR_SUCCESS
+
+    
+    table_column = ft.Column([])
+    active_category = {"value": selected_category}  
+
+    
+    def build_rows(product_list):
+        return [
+            ft.DataRow(
+                cells=[
+                    ft.DataCell(
+                        ft.Text(p["id"], color=TEXT_SECONDARY, size=12)
+                    ),
+                    ft.DataCell(
+                        ft.Text(
+                            p["name"],
+                            color=TEXT_PRIMARY,
+                            size=13,
+                            weight=ft.FontWeight.W_500,
+                        )
+                    ),
+                    ft.DataCell(
+                        ft.Text(p["category"], color=TEXT_SECONDARY, size=12)
+                    ),
+                    ft.DataCell(
+                        ft.Text(
+                            str(p["stock"]),
+                            color=determine_stock_color(p),
+                            size=13,
+                            weight=ft.FontWeight.W_600,
+                        )
+                    ),
+                    ft.DataCell(
+                        ft.Text(f'₹{p["price"]:,.2f}', color=TEXT_PRIMARY)
+                    ),
+                    ft.DataCell(
+                        ft.Text(p["supplier"], color=TEXT_SECONDARY)
+                    ),
+                    ft.DataCell(
+                        ft.Row([
+                            ft.IconButton(
+                                ft.Icons.EDIT,
+                                icon_color=ACCENT_PRIMARY,
+                                on_click=lambda e, p=p: handle_edit_product(p),
+                            ),
+                            ft.IconButton(
+                                ft.Icons.DELETE,
+                                icon_color=COLOR_DANGER,
+                                on_click=lambda e, pid=p["id"]: handle_delete_product(pid),
+                            ),
+                        ])
+                    ),
+                ]
+            )
+            for p in product_list
+        ]
+
+    
+    def refresh_table(product_list):
+        table_column.controls.clear()
+        table_column.controls.append(
+            build_data_table(
+                column_labels=[
+                    "ID", "Name", "Category",
+                    "Stock", "Price", "Supplier", "Actions",
+                ],
+                table_rows=build_rows(product_list),
+            )
+        )
+        flet_page.update()
+
+    
+    def apply_filters(search_text, category):
+        from data.product_service import search_products
+
+        if search_text == "":
+            filtered = get_all_products()
+        else:
+            filtered = search_products(search_text)
+
+        if category != "All Categories":
+            filtered = [
+                p for p in filtered
+                if p["category"].strip().lower() == category.strip().lower()
+            ]
+        refresh_table(filtered)
+
+    
+    def handle_search(e):
+        search_text = e.control.value.strip()
+        apply_filters(search_text, active_category["value"])
+
+    def handle_add_product(e):
+        open_add_product_dialog(
+            flet_page,
+            lambda: refresh_table(get_all_products()),
+        )
+
+    def handle_delete_product(product_id):
+        from data.product_service import delete_product
+        delete_product(product_id)
+        refresh_table(get_all_products())
+
+    def handle_edit_product(product):
+        from dialogs.edit_product_dialog import open_edit_product_dialog
+        open_edit_product_dialog(
+            flet_page,
+            product,
+            lambda: refresh_table(get_all_products()),
+        )
+
+    
+    categories = ["All Categories", "Electronics", "Furniture", "Lighting" , "Stationery", "Networking"]
+    category_buttons_row = ft.Row(spacing=8, wrap=True)
+
+    def render_category_buttons():
+        category_buttons_row.controls.clear()
+        for cat in categories:
+            is_active = active_category["value"] == cat
+
+            def on_cat_click(e, label=cat):
+                active_category["value"] = label
+                render_category_buttons()
+                apply_filters(search_field.value.strip(), label)
+
+            category_buttons_row.controls.append(
+                ft.ElevatedButton(
+                    cat,
+                    on_click=on_cat_click,
+                    height=36,
+                    style=ft.ButtonStyle(
+                        bgcolor=ACCENT_PRIMARY if is_active else SURFACE_DARK,
+                        color=TEXT_PRIMARY,
+                        side=ft.BorderSide(
+                            1,
+                            ACCENT_PRIMARY if is_active else BORDER_DEFAULT,
+                        ),
+                        shape=ft.RoundedRectangleBorder(radius=8),
+                    ),
+                )
+            )
+        flet_page.update()
+
+    
+    search_field = ft.TextField(
+        value=search_value,
+        hint_text="Search products...",
+        prefix_icon=ft.Icons.SEARCH,
+        bgcolor=SURFACE_DARK,
+        border_color=BORDER_DEFAULT,
+        focused_border_color=ACCENT_PRIMARY,
+        color=TEXT_PRIMARY,
+        hint_style=ft.TextStyle(color=TEXT_SECONDARY),
+        height=42,
+        expand=True,
+        border_radius=10,
+        on_change=handle_search,
+    )
+
+    
+    render_category_buttons()
+    refresh_table(products)
+
+    
+    products_table_card = build_card(
+        ft.Column([
+            ft.Row([search_field], spacing=12),
+            ft.Container(height=8),
+            category_buttons_row,       
+            ft.Container(height=12),
+            table_column,
+        ])
+    )
+
+    return ft.Column(
+        [
+            build_page_header(
+                header_title="Products Management",
+                header_subtitle="Manage your product catalog",
+                header_icon=ft.Icons.INVENTORY,
+                action_buttons=[
+                    build_action_button(
+                        "Add Product",
+                        ft.Icons.ADD,
+                        on_click_handler=handle_add_product,
+                    )
+                ],
+            ),
+            ft.Container(height=20),
+            ft.ResponsiveRow(
+                [
+                    ft.Column(
+                        [build_stat_card(
+                            ft.Icons.INVENTORY, "Total Products",
+                            len(products), None, ACCENT_PRIMARY
+                        )],
+                        col={"xs": 6, "md": 3},
+                    ),
+                    ft.Column(
+                        [build_stat_card(
+                            ft.Icons.CHECK_CIRCLE, "In Stock",
+                            sum(1 for p in products if p["stock"] > 0),
+                            None, COLOR_SUCCESS
+                        )],
+                        col={"xs": 6, "md": 3},
+                    ),
+                    ft.Column(
+                        [build_stat_card(
+                            ft.Icons.WARNING, "Low Stock",
+                            sum(1 for p in products if 0 < p["stock"] < p["reorder"]),
+                            None, COLOR_WARNING
+                        )],
+                        col={"xs": 6, "md": 3},
+                    ),
+                    ft.Column(
+                        [build_stat_card(
+                            ft.Icons.CANCEL, "Out of Stock",
+                            sum(1 for p in products if p["stock"] == 0),
+                            None, COLOR_DANGER
+                        )],
+                        col={"xs": 6, "md": 3},
+                    ),
+                ],
+                spacing=16,
+            ),
+            ft.Container(height=20),
+            products_table_card,
+        ],
+        scroll=ft.ScrollMode.AUTO,
+        expand=True,
+    )
