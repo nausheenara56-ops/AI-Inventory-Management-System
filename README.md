@@ -44,6 +44,6 @@ AI-powered insights for smarter inventory decisions.
 - Kumar Anurag - ( Data Analysis & AI features )
 
 ## Status
- In active development — Minor Project, IIT CSE (2025-26)
+ In active development — Minor Project, IIT CSDA(2025-26)
 ```
 
