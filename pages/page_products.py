@@ -33,9 +33,9 @@ def build_products_page(
         products = filtered_products
 
     def determine_stock_color(p):
-        if p["stock"] == 0:
+        if p["current_stock"] == 0:
             return COLOR_DANGER
-        if p["stock"] < p["reorder"]:
+        if p["current_stock"] < p["reorder_point"]:
             return COLOR_WARNING
         return COLOR_SUCCESS
 
@@ -49,7 +49,7 @@ def build_products_page(
             ft.DataRow(
                 cells=[
                     ft.DataCell(
-                        ft.Text(p["id"], color=TEXT_SECONDARY, size=12)
+                        ft.Text(p["product_id"], color=TEXT_SECONDARY, size=12)
                     ),
                     ft.DataCell(
                         ft.Text(
@@ -60,21 +60,21 @@ def build_products_page(
                         )
                     ),
                     ft.DataCell(
-                        ft.Text(p["category"], color=TEXT_SECONDARY, size=12)
+                        ft.Text(p["category_id"], color=TEXT_SECONDARY, size=12)
                     ),
                     ft.DataCell(
                         ft.Text(
-                            str(p["stock"]),
+                            str(p["current_stock"]),
                             color=determine_stock_color(p),
                             size=13,
                             weight=ft.FontWeight.W_600,
                         )
                     ),
                     ft.DataCell(
-                        ft.Text(f'₹{p["price"]:,.2f}', color=TEXT_PRIMARY)
+                        ft.Text(f'₹{p["selling_price"]:,.2f}', color=TEXT_PRIMARY)
                     ),
                     ft.DataCell(
-                        ft.Text(p["supplier"], color=TEXT_SECONDARY)
+                        ft.Text(p["supplier_id"], color=TEXT_SECONDARY)
                     ),
                     ft.DataCell(
                         ft.Row([
@@ -86,7 +86,7 @@ def build_products_page(
                             ft.IconButton(
                                 ft.Icons.DELETE,
                                 icon_color=COLOR_DANGER,
-                                on_click=lambda e, pid=p["id"]: handle_delete_product(pid),
+                                on_click=lambda e, pid=p["product_id"]: handle_delete_product(pid),
                             ),
                         ])
                     ),
@@ -239,7 +239,7 @@ def build_products_page(
                     ft.Column(
                         [build_stat_card(
                             ft.Icons.CHECK_CIRCLE, "In Stock",
-                            sum(1 for p in products if p["stock"] > 0),
+                            sum(1 for p in products if p["current_stock"] > 0),
                             None, COLOR_SUCCESS
                         )],
                         col={"xs": 6, "md": 3},
@@ -247,7 +247,7 @@ def build_products_page(
                     ft.Column(
                         [build_stat_card(
                             ft.Icons.WARNING, "Low Stock",
-                            sum(1 for p in products if 0 < p["stock"] < p["reorder"]),
+                            sum(1 for p in products if 0 < p["current_stock"] < p["reorder_point"]),
                             None, COLOR_WARNING
                         )],
                         col={"xs": 6, "md": 3},
@@ -255,7 +255,7 @@ def build_products_page(
                     ft.Column(
                         [build_stat_card(
                             ft.Icons.CANCEL, "Out of Stock",
-                            sum(1 for p in products if p["stock"] == 0),
+                            sum(1 for p in products if p["current_stock"] == 0),
                             None, COLOR_DANGER
                         )],
                         col={"xs": 6, "md": 3},

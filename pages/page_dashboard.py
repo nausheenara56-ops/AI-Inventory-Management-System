@@ -25,12 +25,11 @@ def build_dashboard_page(flet_page: ft.Page):
     ALL_PRODUCTS = get_all_products()
 
     number_of_low_stock_items = sum(
-        1 for product in ALL_PRODUCTS if product["stock"] < product["reorder"]
-    )
+    1 for product in ALL_PRODUCTS if product["current_stock"] < product["reorder_point"]
+  )
     number_of_out_of_stock_items = sum(
-        1 for product in ALL_PRODUCTS if product["stock"] == 0
-    )
-
+    1 for product in ALL_PRODUCTS if product["current_stock"] == 0
+  )
     recent_alert_widgets = ft.Column(
         [
             ft.Row(
@@ -82,14 +81,14 @@ def build_dashboard_page(flet_page: ft.Page):
             cells=[
                 ft.DataCell(ft.Text(product["name"], color=TEXT_PRIMARY, size=13)),
                 ft.DataCell(
-                    ft.Text(product["category"], color=TEXT_SECONDARY, size=12)
+                    ft.Text(product["category_id"], color=TEXT_SECONDARY, size=12)
                 ),
                 ft.DataCell(
                     ft.Text(
-                        str(product["stock"]),
+                        str(product["current_stock"]),
                         color=(
                             COLOR_SUCCESS
-                            if product["stock"] > product["reorder"]
+                            if product["current_stock"] > product["reorder_point"]
                             else COLOR_DANGER
                         ),
                         size=13,
@@ -97,7 +96,7 @@ def build_dashboard_page(flet_page: ft.Page):
                     )
                 ),
                 ft.DataCell(
-                    ft.Text(f'₹{product["price"]:,.2f}', color=TEXT_PRIMARY, size=13)
+                    ft.Text(f'₹{product["selling_price"]:,.2f}', color=TEXT_PRIMARY, size=13)
                 ),
             ]
         )

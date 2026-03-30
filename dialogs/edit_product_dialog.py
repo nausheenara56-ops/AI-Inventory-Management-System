@@ -5,11 +5,11 @@ from data.product_service import update_product
 def open_edit_product_dialog(page, product, refresh_callback):
 
     name = ft.TextField(label="Product Name", value=product["name"])
-    category = ft.TextField(label="Category", value=product["category"])
-    stock = ft.TextField(label="Stock", value=str(product["stock"]))
-    price = ft.TextField(label="Price", value=str(product["price"]))
-    reorder = ft.TextField(label="Reorder Level", value=str(product["reorder"]))
-    supplier = ft.TextField(label="Supplier", value=product["supplier"])
+    category = ft.TextField(label="Category", value=product["category_id"])
+    stock = ft.TextField(label="Stock", value=str(product["current_stock"]))
+    price = ft.TextField(label="Price", value=str(product["selling_price"]))
+    reorder = ft.TextField(label="Reorder Level", value=str(product["reorder_point"]))
+    supplier = ft.TextField(label="Supplier", value=product["supplier_id"])
 
 
     def save_product(e):
@@ -23,7 +23,7 @@ def open_edit_product_dialog(page, product, refresh_callback):
             "supplier": supplier.value
         }
 
-        update_product(product["id"], updated_data)
+        update_product(product["product_id"], updated_data)
 
         dialog.open = False
         page.update()
