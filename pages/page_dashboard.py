@@ -22,7 +22,7 @@ from data.constants import ALL_ALERTS
 
 
 def build_dashboard_page(flet_page: ft.Page):
-    ALL_PRODUCTS = get_all_products(limit=20)
+    ALL_PRODUCTS = get_all_products()
 
     number_of_low_stock_items = sum(
     1 for product in ALL_PRODUCTS if int(product["current_stock"]) < int(product["reorder_point"])
