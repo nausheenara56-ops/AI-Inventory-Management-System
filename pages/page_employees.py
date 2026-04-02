@@ -122,8 +122,8 @@ def build_employees_page(flet_page: ft.Page):
             ft.DataRow(
                 cells=[
                     ft.DataCell(
-                        ft.Text(emp.get("employee_id", ""), color=TEXT_SECONDARY, size=12),
-                        on_tap=lambda e, x=emp: fill(x),
+                        ft.Text(emp.get("employee_id", ""), color=TEXT_PRIMARY, size=12),
+                        on_tap=lambda e, x=emp: fill(x), 
                     ),
                     ft.DataCell(ft.Text(emp.get("name", ""), color=TEXT_PRIMARY, size=13, weight=ft.FontWeight.W_500)),
                     ft.DataCell(ft.Text(emp.get("role", ""), color=TEXT_SECONDARY, size=12)),

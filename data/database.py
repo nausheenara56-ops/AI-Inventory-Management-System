@@ -2,7 +2,7 @@
 from pymongo import MongoClient
 
 client = MongoClient("mongodb://localhost:27017/")
-db = client["inventory_full_system"]  
+db = client["inventory"]  
 
 # Collections
 product_collection = db["products"]

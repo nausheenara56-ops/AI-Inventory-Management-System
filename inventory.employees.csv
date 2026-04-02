@@ -87,7 +87,7 @@ _id,name,gender,contact,dob,email,password,role,salary,address,performance_score
 69c668ef08e9d8cb13612c87,Neetu Singh,Female,9876543294,08-07-1958,neetu.s@mail.com,nee<00,Manager,94000,"Pali Hill, Mumbai",88,0,false,emp86
 69c668ef08e9d8cb13612c88,Jeetendra Kapoor,Male,9876543295,07-04-1942,jeetu.k@mail.com,jee>11,Advisor,145000,"Colaba, Mumbai",89,500,false,emp87
 69c668ef08e9d8cb13612c89,Saira Banu,Female,9876543296,23-08-1944,saira.b@mail.com,sai?22,Advisor,135000,"Bandra, Mumbai",87,0,false,emp88
-69c668ef08e9d8cb13612c90,Dilip Kumar,Male,9876543297,11-12-1922,dilip.k@mail.com,dil,33,Director,200000,"Bandra, Mumbai",100,0,emp89
+69c668ef08e9d8cb13612c90,Dilip Kumar,Male,9876543297,11-12-1922,dilip.k@mail.com,dil,33,Director,200000,"Bandra, Mumbai",100,0,false,emp89
 69c668ef08e9d8cb13612c91,Waheeda Rehman,Female,9876543298,03-02-1938,waheeda.r@mail.com,wah.44,Advisor,130000,"Bandra, Mumbai",96,0,false,emp90
 69c668ef08e9d8cb13612c92,Vinod Khanna,Male,9876543299,06-10-1946,vinod.k@mail.com,vin/55,Expert,125000,"Malabar Hill, Mumbai",91,400,false,emp91
 69c668ef08e9d8cb13612c93,Zeenat Aman,Female,9876543300,19-11-1951,zeenat.a@mail.com,zee~66,Lead,105000,"Worli, Mumbai",86,300,false,emp92

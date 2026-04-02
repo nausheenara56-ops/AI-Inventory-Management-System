@@ -22,13 +22,13 @@ from data.constants import ALL_ALERTS
 
 
 def build_dashboard_page(flet_page: ft.Page):
-    ALL_PRODUCTS = get_all_products()
+    ALL_PRODUCTS = get_all_products(limit=20)
 
     number_of_low_stock_items = sum(
-    1 for product in ALL_PRODUCTS if product["current_stock"] < product["reorder_point"]
+    1 for product in ALL_PRODUCTS if int(product["current_stock"]) < int(product["reorder_point"])
   )
     number_of_out_of_stock_items = sum(
-    1 for product in ALL_PRODUCTS if product["current_stock"] == 0
+    1 for product in ALL_PRODUCTS if int(product["current_stock"]) == 0
   )
     recent_alert_widgets = ft.Column(
         [
@@ -96,7 +96,7 @@ def build_dashboard_page(flet_page: ft.Page):
                     )
                 ),
                 ft.DataCell(
-                    ft.Text(f'₹{product["selling_price"]:,.2f}', color=TEXT_PRIMARY, size=13)
+                    ft.Text(f'₹{float(product["selling_price"]):,.2f}', color=TEXT_PRIMARY, size=13)
                 ),
             ]
         )

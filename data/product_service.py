@@ -1,8 +1,18 @@
 from data.database import product_collection
 
-def get_all_products():
-    products = list(product_collection.find({}, {"_id": 0}))
-    return products
+def get_all_products(limit=None):
+    try:
+         if limit:
+           products = list(product_collection.find(
+                {}, {"_id": 0}
+            ).limit(limit))
+         else:
+            products = list(product_collection.find({}, {"_id": 0}))
+         print(f" Found {len(products)} products")
+         return products
+    except Exception as e:
+        print(f" Error: {e}")
+        return []
 
 def add_product(product_data):
     product_collection.insert_one(product_data)
@@ -37,3 +47,4 @@ def search_products(search_text):
         )
     )
     return result
+
